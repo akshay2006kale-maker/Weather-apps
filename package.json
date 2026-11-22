@@ -1,0 +1,21 @@
+{
+  "name": "weather-rider-safety-app",
+  "version": "1.0.0",
+  "description": "Professional Weather & Rider Safety Application using Node.js, Express, and OpenWeather API",
+  "main": "backend/server/server.js",
+  "scripts": {
+    "start": "node backend/server/server.js",
+    "dev": "nodemon backend/server/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

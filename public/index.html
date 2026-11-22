@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoWeather & Rider Safety Pro - Professional Weather Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body class="weather-theme-default">
+    <!-- Ambient Dynamic Background FX -->
+    <div class="weather-bg-overlay"></div>
+    <div class="ambient-glow"></div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header / Navigation Bar -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-motorcycle"></i>
+                </div>
+                <div>
+                    <h1>MotoWeather Pro</h1>
+                    <p class="tagline">Weather & Rider Safety Intelligence</p>
+                </div>
+            </div>
+
+            <!-- Global Search & Quick Actions -->
+            <div class="header-search-container">
+                <form id="search-form" class="search-form">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search city (e.g. London, Tokyo, New York)..." autocomplete="off" required>
+                        <button type="button" id="geo-btn" class="geo-btn" title="Use Current Location">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="search-submit-btn">Search</button>
+                </form>
+                
+                <!-- Recent Searches Dropdown / Chips -->
+                <div id="recent-searches" class="recent-searches hidden">
+                    <span class="recent-label">Recent:</span>
+                    <div id="recent-chips" class="recent-chips"></div>
+                </div>
+            </div>
+
+            <!-- Top Controls (Theme, Units, Refresh, Notifications) -->
+            <div class="header-controls">
+                <button id="notification-toggle-btn" class="control-btn" title="Enable Browser Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+                <button id="unit-toggle-btn" class="control-btn" title="Toggle Temperature Unit">
+                    <span id="unit-label">°C</span>
+                </button>
+                <button id="theme-toggle-btn" class="control-btn" title="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button id="refresh-btn" class="control-btn" title="Refresh Weather Data">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="dashboard-tabs">
+            <button class="tab-btn active" data-tab="dashboard">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </button>
+            <button class="tab-btn" data-tab="rider-safety">
+                <i class="fa-solid fa-triangle-exclamation"></i> Rider Safety Hub
+            </button>
+            <button class="tab-btn" data-tab="travel-planner">
+                <i class="fa-solid fa-route"></i> Travel & Route Weather
+            </button>
+            <button class="tab-btn" data-tab="comparison">
+                <i class="fa-solid fa-code-compare"></i> City Comparison
+            </button>
+            <button class="tab-btn" data-tab="favorites">
+                <i class="fa-solid fa-heart"></i> Favorite Cities
+            </button>
+        </nav>
+
+        <!-- Main Dashboard Content -->
+        <main class="main-content">
+
+            <!-- Loading Spinner / Error Banner -->
+            <div id="loading-overlay" class="loading-overlay hidden">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>Analyzing atmospheric & road conditions...</p>
+                </div>
+            </div>
+
+            <div id="error-banner" class="error-banner hidden">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="error-message">Unable to fetch weather information. Please check the city name and try again.</span>
+                <button id="error-close" class="error-close">&times;</button>
+            </div>
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content active">
+                
+                <!-- Prominent Smart Alert Banner -->
+                <section id="dashboard-alert-section" class="alert-banner-section safe">
+                    <div class="alert-icon-wrapper">
+                        <i id="dashboard-alert-icon" class="fa-solid fa-shield-check"></i>
+                    </div>
+                    <div class="alert-content">
+                        <div class="alert-header-row">
+                            <h3 id="dashboard-alert-title">Riding Conditions: SAFE</h3>
+                            <span id="dashboard-alert-badge" class="badge safe">Safe to Ride</span>
+                        </div>
+                        <p id="dashboard-alert-desc">Weather is clear and favorable for bike riding, commuting, and long-distance road trips.</p>
+                    </div>
+                </section>
+
+                <!-- Top Weather Grid -->
+                <div class="weather-grid">
+                    
+                    <!-- Current Weather Card -->
+                    <div class="weather-card current-weather-card">
+                        <div class="card-header">
+                            <div class="location-title">
+                                <h2 id="current-city">Loading...</h2>
+                                <p id="current-date">--</p>
+                            </div>
+                            <button id="favorite-btn" class="favorite-btn" title="Save to Favorites">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <div class="current-weather-body">
+                            <div class="temp-display">
+                                <div class="temp-value-wrapper">
+                                    <span id="current-temp">--</span>
+                                    <span class="temp-unit">°C</span>
+                                </div>
+                                <p class="feels-like">Feels like <span id="feels-like">--</span>°C</p>
+                            </div>
+                            <div class="condition-display">
+                                <img id="weather-icon" src="" alt="Weather Icon" class="weather-main-icon">
+                                <p id="weather-condition">--</p>
+                            </div>
+                        </div>
+
+                        <!-- Highlights / Mini metrics -->
+                        <div class="current-highlights-grid">
+                            <div class="highlight-mini">
+                                <i class="fa-solid fa-droplet"></i>
+                                <div>
+                                    <span class="label">Humidity</span>
+                                    <span id="highlight-humidity">--%</span>
+                                </div>
+                            </div>
+                            <div class="highlight-mini">
+                                <i class="fa-solid fa-wind"></i>
+                                <div>
+                                    <span class="label">Wind</span>
+                                    <span id="highlight-wind">-- km/h</span>
+                                </div>
+                            </div>
+                            <div class="highlight-mini">
+                                <i class="fa-solid fa-gauge"></i>
+                                <div>
+                                    <span class="label">Pressure</span>
+                                    <span id="highlight-pressure">-- hPa</span>
+                                </div>
+                            </div>
+                            <div class="highlight-mini">
+                                <i class="fa-solid fa-eye"></i>
+                                <div>
+                                    <span class="label">Visibility</span>
+                                    <span id="highlight-visibility">-- km</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hourly Forecast Card -->
+                    <div class="weather-card hourly-card">
+                        <div class="card-title-row">
+                            <h3><i class="fa-solid fa-clock"></i> Hourly Forecast</h3>
+                            <span class="subtitle">Next 24 Hours</span>
+                        </div>
+                        <div id="hourly-container" class="hourly-container">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Detailed Weather Metrics Grid -->
+                <div class="metrics-section-title">
+                    <h3><i class="fa-solid fa-chart-line"></i> Detailed Weather & Atmospheric Metrics</h3>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fa-solid fa-sun"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-title">Sunrise & Sunset</span>
+                            <div class="sun-times">
+                                <div><small>Sunrise</small><span id="sun-sunrise">--:--</span></div>
+                                <div><small>Sunset</small><span id="sun-sunset">--:--</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fa-solid fa-compass"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-title">Wind Direction</span>
+                            <span id="wind-direction-text" class="metric-value">--</span>
+                            <small id="wind-deg">Direction: --°</small>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fa-solid fa-cloud"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-title">Cloud Coverage</span>
+                            <span id="cloud-coverage" class="metric-value">--%</span>
+                            <small>Sky opacity index</small>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fa-solid fa-temperature-arrow-up"></i></div>
+                        <div class="metric-info">
+                            <span class="metric-title">Temperature Range</span>
+                            <div class="sun-times">
+                                <div><small>Max</small><span id="temp-max">--°C</span></div>
+                                <div><small>Min</small><span id="temp-min">--°C</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5-Day Weather Forecast -->
+                <div class="forecast-section-title">
+                    <h3><i class="fa-solid fa-calendar-days"></i> 5-Day Extended Forecast</h3>
+                </div>
+                <div id="forecast-container" class="forecast-grid">
+                    <!-- Populated via JS -->
+                </div>
+
+            </section>
+
+            <!-- TAB 2: RIDER SAFETY HUB -->
+            <section id="tab-rider-safety" class="tab-content">
+                <div class="section-banner">
+                    <h2><i class="fa-solid fa-triangle-exclamation"></i> Rider Safety Intelligence Hub</h2>
+                    <p>Designed for motorcycle riders, delivery partners, and road-trip enthusiasts. Real-time hazard detection and gear recommendations.</p>
+                </div>
+
+                <div class="rider-dashboard-grid">
+                    
+                    <!-- Safety Status Main Card -->
+                    <div class="weather-card safety-status-card" id="rider-safety-card-bg">
+                        <div class="safety-score-header">
+                            <div class="safety-badge-large" id="rider-safety-badge">
+                                <i id="rider-safety-icon" class="fa-solid fa-shield-check"></i>
+                                <span id="rider-safety-status-text">SAFE TO RIDE</span>
+                            </div>
+                            <h3 id="rider-city-title">--</h3>
+                        </div>
+                        <p id="rider-primary-advice" class="rider-advice-text">
+                            Conditions are optimal for riding. Maintain normal safety checks and enjoy your trip.
+                        </p>
+                        
+                        <div class="recommendation-box">
+                            <h4><i class="fa-solid fa-lightbulb"></i> Recommended Riding Action</h4>
+                            <p id="rider-recommendation-action">Standard gear is sufficient. Drive defensively and stay aware of surroundings.</p>
+                        </div>
+                    </div>
+
+                    <!-- Weather Hazard Alerts Grid -->
+                    <div class="weather-card hazards-card">
+                        <h3><i class="fa-solid fa-bell-slash"></i> Hazard & Warning Checks</h3>
+                        <div class="hazard-list" id="hazard-list-container">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Gear & Protection Suggestions -->
+                <div class="gear-section">
+                    <h3><i class="fa-solid fa-vest"></i> Recommended Gear & Equipment</h3>
+                    <div class="gear-grid" id="gear-grid-container">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 3: TRAVEL & ROUTE WEATHER -->
+            <section id="tab-travel-planner" class="tab-content">
+                <div class="section-banner">
+                    <h2><i class="fa-solid fa-route"></i> Travel & Route Weather Planner</h2>
+                    <p>Planning a long journey or road trip? Enter your start and destination cities to compare weather conditions and get route safety insights.</p>
+                </div>
+
+                <div class="travel-form-card">
+                    <form id="route-form" class="route-form">
+                        <div class="route-input-group">
+                            <label for="route-start"><i class="fa-solid fa-location-dot"></i> Starting City</label>
+                            <input type="text" id="route-start" placeholder="e.g. Los Angeles, CA" required>
+                        </div>
+                        <div class="route-swap-btn-container">
+                            <button type="button" id="route-swap-btn" class="route-swap-btn" title="Swap Cities">
+                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                            </button>
+                        </div>
+                        <div class="route-input-group">
+                            <label for="route-dest"><i class="fa-solid fa-flag-checkered"></i> Destination City</label>
+                            <input type="text" id="route-dest" placeholder="e.g. Las Vegas, NV" required>
+                        </div>
+                        <button type="submit" class="route-submit-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i> Analyze Route
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Route Weather Results -->
+                <div id="route-results-container" class="route-results-container hidden">
+                    
+                    <div class="route-comparison-grid">
+                        <!-- Start Weather -->
+                        <div class="weather-card route-city-card">
+                            <div class="route-card-header">
+                                <span>Departure</span>
+                                <h3 id="route-start-name">--</h3>
+                            </div>
+                            <div class="route-card-body">
+                                <img id="route-start-icon" src="" alt="Icon">
+                                <div>
+                                    <h4 id="route-start-temp">--°C</h4>
+                                    <p id="route-start-cond">--</p>
+                                </div>
+                            </div>
+                            <ul class="route-metrics-list">
+                                <li><i class="fa-solid fa-wind"></i> Wind: <span id="route-start-wind">--</span></li>
+                                <li><i class="fa-solid fa-droplet"></i> Humidity: <span id="route-start-hum">--</span></li>
+                            </ul>
+                        </div>
+
+                        <!-- Route Journey Advisory -->
+                        <div class="weather-card route-advisory-card">
+                            <h3><i class="fa-solid fa-shield-halved"></i> Journey Safety Summary</h3>
+                            <div id="route-safety-badge" class="badge safe">Safe Travel Conditions</div>
+                            <p id="route-advisory-text">Both departure and destination cities have favorable weather. Have a safe journey!</p>
+                            <div class="route-progress-visual">
+                                <i class="fa-solid fa-motorcycle"></i>
+                                <div class="progress-line"></div>
+                                <i class="fa-solid fa-flag-checkered"></i>
+                            </div>
+                        </div>
+
+                        <!-- Destination Weather -->
+                        <div class="weather-card route-city-card">
+                            <div class="route-card-header">
+                                <span>Destination</span>
+                                <h3 id="route-dest-name">--</h3>
+                            </div>
+                            <div class="route-card-body">
+                                <img id="route-dest-icon" src="" alt="Icon">
+                                <div>
+                                    <h4 id="route-dest-temp">--°C</h4>
+                                    <p id="route-dest-cond">--</p>
+                                </div>
+                            </div>
+                            <ul class="route-metrics-list">
+                                <li><i class="fa-solid fa-wind"></i> Wind: <span id="route-dest-wind">--</span></li>
+                                <li><i class="fa-solid fa-droplet"></i> Humidity: <span id="route-dest-hum">--</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Travel Preparation Checklist -->
+                    <div class="weather-card checklist-card">
+                        <h3><i class="fa-solid fa-list-check"></i> Travel Preparation Checklist based on Destination Weather</h3>
+                        <div id="checklist-items" class="checklist-items">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- TAB 4: CITY COMPARISON -->
+            <section id="tab-comparison" class="tab-content">
+                <div class="section-banner">
+                    <h2><i class="fa-solid fa-code-compare"></i> Multi-City Weather Comparison</h2>
+                    <p>Compare live weather conditions, wind speeds, and rider safety scores across multiple cities side by side.</p>
+                </div>
+
+                <div class="comparison-add-bar">
+                    <form id="comparison-form" class="comparison-form">
+                        <input type="text" id="comparison-input" placeholder="Add a city to compare (e.g. Paris, Berlin)..." required>
+                        <button type="submit"><i class="fa-solid fa-plus"></i> Add City</button>
+                    </form>
+                </div>
+
+                <div id="comparison-grid" class="comparison-grid">
+                    <!-- Populated via JS -->
+                </div>
+            </section>
+
+            <!-- TAB 5: FAVORITES -->
+            <section id="tab-favorites" class="tab-content">
+                <div class="section-banner">
+                    <h2><i class="fa-solid fa-heart"></i> Saved Favorite Cities</h2>
+                    <p>Quickly access weather updates for your pinned favorite cities and locations.</p>
+                </div>
+
+                <div id="favorites-grid" class="favorites-grid">
+                    <!-- Populated via JS -->
+                </div>
+
+                <div id="no-favorites" class="no-favorites hidden">
+                    <i class="fa-regular fa-heart"></i>
+                    <h3>No Favorite Cities Saved Yet</h3>
+                    <p>Search for any city on the dashboard and click the heart icon to add it to your favorites.</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 MotoWeather & Rider Safety Pro. Powered by OpenWeather API & Node.js.</p>
+            <p class="footer-note">Designed for bikers, delivery riders, and road travellers worldwide.</p>
+        </footer>
+
+    </div>
+
+    <!-- Frontend JavaScript -->
+    <script src="JavaScript/app.js"></script>
+</body>
+</html>
